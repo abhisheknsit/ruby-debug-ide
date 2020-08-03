@@ -19,10 +19,18 @@ module Debugger
 
   class << self
     def find_free_port(host)
-      server = TCPServer.open(host, 0)
-      port   = server.addr[1]
-      server.close
-      port
+      @@available_ports ||= (60000..60100).to_a
+      begin
+        port = @@available_ports.shift
+        server = TCPServer.open(host, port)
+        return port
+      rescue Errno::EADDRINUSE => e
+        retry unless @@available_ports.empty?
+        puts e.message
+        raise e
+      ensure
+        server.close unless server.nil?
+      end
     end
 
     # Prints to the stderr using printf(*args) if debug logging flag (-d) is on.
