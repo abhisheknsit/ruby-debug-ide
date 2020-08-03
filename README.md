@@ -21,12 +21,13 @@ rdebug-ide --host 0.0.0.0 --port 1234 --dispatcher-port 1234 -- bin/rails s
 ```
 If you want to debug a Rails application run using Docker Compose, you need to start the Rails server from the Docker in the following way:
 ```yaml
-command: bundle exec rdebug-ide --host 0.0.0.0 --port 1234 -- bin/rails s -p 3000 -b 0.0.0.0
+command: bundle exec rdebug-ide --host 0.0.0.0 --port 1234 --dispatcher-port host.docker.internal:1234 -- bin/rails s -p 3000 -b 0.0.0.0
 volumes: 
   - .:/sample_rails_app
 ports:
   - "1234:1234"
   - "3000:3000"
   - "26162:26162"
+  - "60000:60100"
 ```
 Note that all ports above should be exposed in the Dockerfile.
